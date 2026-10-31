@@ -31,7 +31,8 @@ class WorkOrderSeeder extends Seeder
     foreach ($titles as $i => $title) {
         $status = $statuses[$i % 4];
 
-        WorkOrder::create([
+        $date = now()->subDays(rand(0, 170));
+        $workOrder = new WorkOrder([
             'asset_id'     => $assetIds[array_rand($assetIds)],
             'created_by'   => $creator,
             'assigned_to'  => $techs[array_rand($techs)],
@@ -39,9 +40,12 @@ class WorkOrderSeeder extends Seeder
             'description'  => "Pekerjaan: {$title}.",
             'priority'     => $priorities[array_rand($priorities)],
             'status'       => $status,
-            'due_date'     => now()->addDays(rand(1, 14))->toDateString(),
-            'completed_at' => $status === 'closed' ? now()->subDays(rand(1, 5)) : null,
+            'due_date'     => now()->addDays(rand(-10, 14))->toDateString(),
+            'completed_at' => $status === 'closed' ? $date->copy()->addDays(rand(1, 5)) : null,
         ]);
+        $workOrder->created_at = $date;
+        $workOrder->updated_at = $date;
+        $workOrder->save();
+    };
     }
-}
 }
